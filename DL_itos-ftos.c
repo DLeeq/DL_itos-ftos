@@ -82,3 +82,45 @@ uint8_t DL_floatToStr(char* str, float num, uint8_t precision)
 
     return len;
 }
+
+uint8_t DL_parseInt(int32_t* num, char* str)
+{
+    uint8_t sgn_flag = 0;
+    uint8_t index = 0;
+    int32_t result = 0;
+    
+    while(str[index] == ' ' || str[index] == '\t') index++;
+    
+    if(str[index] == '\0') return 1;
+    
+    if(str[index] == '-' || str[index] == '+')
+    {
+        if(str[index] == '-') sgn_flag = 1;
+        
+        index++;
+        
+        while(str[index] == ' ' || str[index] == '\t') index++;
+        
+        if(str[index] == '\0') return 2;
+    }
+    
+    for(; str[index] != '\0'; index++)
+    {
+        if(str[index] == ' ' || str[index] == '\t') continue;
+            
+        if(str[index] < '0' || str[index] > '9') 
+            return 3;
+        else
+        {
+            if(result > (INT32_MAX - (str[index] - '0')) / 10) 
+                return 4;
+            result = result * 10 + (str[index] - '0');
+        }
+    }
+    
+    if(sgn_flag) result = -result;
+        
+    *num = result;
+    
+    return 0;
+}
